@@ -18,7 +18,7 @@ vzdelani_mod <- as.data.frame(read.xlsx(xlsxFile = "data/CR_2016_Mzdy.xlsx", she
 mesto_mod <- as.data.frame(read.xlsx(xlsxFile = "data/CR_2016_Mzdy.xlsx", sheet = "Mestsky_Modifikator"))
 
 
-# Define UI for application that draws a histogram
+# Define UI for application 
 shinyUI(fluidPage(
   
   # Application title
@@ -35,9 +35,29 @@ shinyUI(fluidPage(
                      selectInput("ZvoleneZkusenosti", "Delka zkusenosti v oboru", 
                                  choices = zkusenosti_mod$Prax_v_oboru, selected = "1-2"),
                      selectInput("ZvoleneMesto", "Mesto vykonu prace (nebo sidlo zamestnavatele)", choices = mesto_mod$Mesto, selected = "Brno_Ostrava"),
-                     submitButton("submit")
-                     #actionButton("goButton", "Hotovo"),
-                     #p("Kliknete na Hotovo aby sa projevili zmeny.")
+                     #submitButton("submit")
+                     actionButton("Button", "Hotovo"),
+                     p("Kliknete na Hotovo aby sa projevili zmeny.")
+    ),
+    conditionalPanel(condition = "input.conditionedPanels==8",
+                     selectInput("ZvolenaPozice2", "Pracovni pozice", choices = mzdy_subset$Povolani, 
+                                 selected = "Herci"),
+                     selectInput("ZvolenyVek", "Vas vek", choices = vek_mod$Vek, selected = "23-27"),
+                     selectInput("ZvolenePohlavi", "Vase pohlavi", choices = pohlavi_mod$Pohlavie, selected = "Zena"),
+                     selectInput("ZvoleneVzdelani", "Nejvyssi dosazene vzdelani", 
+                                 choices = vzdelani_mod$Vzdelani, selected = "S maturitou a vyssi odborne"),
+                     selectInput("ZvoleneZkusenosti", "Delka zkusenosti v oboru", 
+                                 choices = zkusenosti_mod$Prax_v_oboru, selected = "1-2"),
+                     selectInput("ZvoleneMesto", "Mesto vykonu prace (nebo sidlo zamestnavatele)", choices = mesto_mod$Mesto, selected = "Brno_Ostrava"),
+                     #submitButton("submit")
+                     actionButton("Button", "Hotovo"),
+                     p("Kliknete na Hotovo aby sa projevili zmeny.")
+    ),
+    conditionalPanel(condition = "input.conditionedPanels==7",
+                     selectInput("Age", "Age", choices = vek_mod$Vek, selected = "23-27"),
+                     selectInput("ChosenSex", "Your sex", choices = pohlavi_mod$Pohlavie, selected = "Zena"),
+                     actionButton("Button", "Done"),
+                     p("Click so changes will take effect.")
     ),
     conditionalPanel(condition="input.conditionedPanels==1",
                      selectInput("Zamestnani", "Vyberte si zamestnani", choices = mzdy_subset$Povolani, selected = "Herci"),
@@ -90,7 +110,9 @@ shinyUI(fluidPage(
         tabPanel("Vek", plotlyOutput("Vek"), value = 4),
         tabPanel("Region", plotlyOutput("Region"), value = 6),
         tabPanel("Vyber_Povolani", plotlyOutput("VybratePovolani"), value = 1),
-        tabPanel("Mzdova_Kalkulacka", plotlyOutput("Mzdova_Kalkulacka"), value = 5) # instead of plotly
+        tabPanel("Mzdova_Kalkulacka", plotlyOutput("Mzdova_Kalkulacka"), value = 5), # instead of plotly
+        tabPanel("Minimal_Example", textOutput("Minimal_Example"), value = 7)
+        #tabPanel("Mzdova_Kalkulacka_Plot", plotlyOutput("Mzdova_Kalkulacka_Plot"), value = 8)
         , id = "conditionedPanels"
       )
     )

@@ -75,8 +75,8 @@ vypocet_mzdy_plotly_boxplot <- function(df, wage_df, type) {
                              , type = type) %>%
                   layout(title = df[rw, "Povolani"])
       }
-      plp <- add_trace(plp, y = wage_calculation_df$Wage
-                       , x = as.character(wage_calculation_df$Dataset)
+      plp <- add_trace(plp, y = wage_df$Wage
+                       , x = as.character(wage_df$Dataset)
                        , name = "Odpovidajici mzda"
                        , type = "scatter"
                        , mode = "markers")
@@ -84,7 +84,7 @@ vypocet_mzdy_plotly_boxplot <- function(df, wage_df, type) {
       return(plp)
 }
 
-# Define server logic required to draw a histogram
+# Define server logic
 shinyServer(function(input, output) {
   
   mzdy_subset <- read.csv("data/Wages_Subset_Ordered.csv", sep = ";", header = T, stringsAsFactors = F)
@@ -100,7 +100,6 @@ shinyServer(function(input, output) {
   vzdelani_mod <- as.data.frame(read.xlsx(xlsxFile = "data/CR_2016_Mzdy.xlsx", sheet = "Vzdelanostny_Modifikator"))
   mesto_mod <- as.data.frame(read.xlsx(xlsxFile = "data/CR_2016_Mzdy.xlsx", sheet = "Mestsky_Modifikator"))
   
-   
   output$Pohlavi <- renderPlotly({
     pohlavi_plp <- create_plotly_boxplots(Pohlavi, "box")
     pohlavi_plp
@@ -126,30 +125,42 @@ shinyServer(function(input, output) {
     zamestnani_plp
   })
   
-  
-  
   output$Mzdova_Kalkulacka <- renderPlotly({
-        
+
         ZvolenePovolani <- input$ZvolenaPozice
         # ZvolenePovolani
         #ZvolenePovolani <- reactive({input$ZvolenaPozice})
-        
+
         # soucet bodu podle modifikatoru a zvolenych parametru
         soucet_bodu <- sum(vek_mod$Body[vek_mod$Vek == input$ZvolenyVek],
                            pohlavi_mod$Body[pohlavi_mod$Pohlavi == input$ZvolenePohlavi],
                            zkusenosti_mod$Body[zkusenosti_mod$Prax_v_oboru == input$ZvoleneZkusenosti],
                            vzdelani_mod$Body[vzdelani_mod$Vzdelani == input$ZvoleneVzdelani],
                            mesto_mod$Body[mesto_mod$Mesto == input$ZvoleneMesto])
-        #soucet_bodu
+        #as.character(soucet_bodu)
         
         # vypocet odhadovane mzdy pro verejnou a sokromou sferu podle zadanych parametru
         wage_df <- calculate_wage(mzdy_subset, ZvolenePovolani, soucet_bodu)
         #wage_df
         
-        vypocet_mzdy_plotly_boxplot(mzdy_subset[mzdy_subset$Povolani == ZvolenePovolani,], wage_df, type = "box")
+        #c(input$ZvolenyVek,
+        #  input$ZvolenePohlavi, soucet_bodu, wage_df)
+        vypocet_mzdy_plotly_boxplot(mzdy_subset[mzdy_subset$Povolani == ZvolenePovolani,] , wage_df , "box")
         
         #vypoctena_mzda_plp <- vypocet_mzdy_plotly_boxplot(mzdy_subset[mzdy_subset$Povolani == ZvolenePovolani,], wage_df, type = "box")
         #vypoctena_mzda_plp
+  })
+  
+  # Age <- eventReactive(input$Button,   {input$Age})
+
+#  Age <- eventReactive(input$Age)
+#  output$Minimal_Example <- renderPrint({Age})
+  
+  output$Minimal_Example <- renderPrint({
+
+        Age <- input$Age
+        Sex <- input$ChosenSex
+        c(Age, Sex)
   })
   
 })

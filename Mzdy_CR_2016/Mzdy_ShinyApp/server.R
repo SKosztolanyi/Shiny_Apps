@@ -87,7 +87,7 @@ vypocet_mzdy_plotly_boxplot <- function(df, wage_df, type) {
 # Define server logic
 shinyServer(function(input, output) {
   
-  mzdy_subset <- read.csv("data/Wages_Subset_Ordered.csv", sep = ";", header = T, stringsAsFactors = F)
+  mzdy_subset <- read.csv("data/Wages_Subset_Clean.csv", sep = ";", header = T, stringsAsFactors = F)
   Pohlavi <- as.data.frame(read.xlsx(xlsxFile = "data/CR_2016_Mzdy.xlsx", sheet = "Pohlavi"))
   Vzdelani <- as.data.frame(read.xlsx(xlsxFile = "data/CR_2016_Mzdy.xlsx", sheet = "Vzdelani"))
   Vekove_kategorie <-  as.data.frame(read.xlsx(xlsxFile = "data/CR_2016_Mzdy.xlsx", sheet = "Vekove_Kategorie"))
@@ -126,41 +126,59 @@ shinyServer(function(input, output) {
   })
   
   output$Mzdova_Kalkulacka <- renderPlotly({
+        input$Button
 
-        ZvolenePovolani <- input$ZvolenaPozice
+        ZvolenePovolani <- isolate(input$ZvolenaPozice)
         # ZvolenePovolani
         #ZvolenePovolani <- reactive({input$ZvolenaPozice})
 
         # soucet bodu podle modifikatoru a zvolenych parametru
-        soucet_bodu <- sum(vek_mod$Body[vek_mod$Vek == input$ZvolenyVek],
-                           pohlavi_mod$Body[pohlavi_mod$Pohlavi == input$ZvolenePohlavi],
-                           zkusenosti_mod$Body[zkusenosti_mod$Prax_v_oboru == input$ZvoleneZkusenosti],
-                           vzdelani_mod$Body[vzdelani_mod$Vzdelani == input$ZvoleneVzdelani],
-                           mesto_mod$Body[mesto_mod$Mesto == input$ZvoleneMesto])
+        soucet_bodu <- sum(vek_mod$Body[vek_mod$Vek == isolate(input$ZvolenyVek)],
+                           pohlavi_mod$Body[pohlavi_mod$Pohlavi == isolate(input$ZvolenePohlavi)],
+                           zkusenosti_mod$Body[zkusenosti_mod$Prax_v_oboru == isolate(input$ZvoleneZkusenosti)],
+                           vzdelani_mod$Body[vzdelani_mod$Vzdelani == isolate(input$ZvoleneVzdelani)],
+                           mesto_mod$Body[mesto_mod$Mesto == isolate(input$ZvoleneMesto)])
         #as.character(soucet_bodu)
         
         # vypocet odhadovane mzdy pro verejnou a sokromou sferu podle zadanych parametru
         wage_df <- calculate_wage(mzdy_subset, ZvolenePovolani, soucet_bodu)
         #wage_df
         
-        #c(input$ZvolenyVek,
-        #  input$ZvolenePohlavi, soucet_bodu, wage_df)
         vypocet_mzdy_plotly_boxplot(mzdy_subset[mzdy_subset$Povolani == ZvolenePovolani,] , wage_df , "box")
-        
-        #vypoctena_mzda_plp <- vypocet_mzdy_plotly_boxplot(mzdy_subset[mzdy_subset$Povolani == ZvolenePovolani,], wage_df, type = "box")
-        #vypoctena_mzda_plp
   })
   
-  # Age <- eventReactive(input$Button,   {input$Age})
-
-#  Age <- eventReactive(input$Age)
-#  output$Minimal_Example <- renderPrint({Age})
+  output$Bezne_Povolani <- renderPlotly({
+        mzdy_ordered <- mzdy_subset[order(-mzdy_subset$Pocet_zamestnancu_v_tis),]
+        plt <- plot_ly(data = mzdy_ordered[1:20,]
+                       , x = ~Kc_mes_prumer 
+                       , y = ~Pocet_zamestnancu_v_tis
+                       , type = "scatter"
+                       , mode = "markers"
+                       , color = ~Kc_mes_prumer
+                       , marker = list(size = 15)
+                       , text = ~paste(Povolani)
+                       ) %>%
+              layout(title = "20 Nejbeznejsich zamestnani v CR",
+                     yaxis = list(range = c(0, 150000), title = "Pocet zamestnanych lidi na pozici v tis."),
+                     xaxis = list(range = c(10000, 40000), title = "Prumerna mesicni odmena v tis. Kc"))
+        plt
+  })
   
-  output$Minimal_Example <- renderPrint({
-
-        Age <- input$Age
-        Sex <- input$ChosenSex
-        c(Age, Sex)
+  output$Placene_Povolani <- renderPlotly({
+        mzdy_placene <- mzdy_subset[order(-mzdy_subset$Kc_mes_prumer),]
+        plt <- plot_ly(data = mzdy_placene[1:20,]
+                       , x = ~Kc_mes_prumer 
+                       , y = ~Pocet_zamestnancu_v_tis
+                       , type = "scatter"
+                       , mode = "markers"
+                       , color = ~Kc_mes_prumer
+                       , marker = list(size = 15)
+                       , text = ~paste(Povolani)
+        ) %>%
+              layout(title = "20 Nejlepe placenych zamestnani v CR",
+                     yaxis = list(range = c(0, 25000), title = "Pocet zamestnanych lidi na pozici v tis."),
+                     xaxis = list(range = c(20000, 170000), title = "Prumerna mesicni odmena v tis. Kc"))
+        plt
   })
   
 })

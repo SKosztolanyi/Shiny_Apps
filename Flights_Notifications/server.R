@@ -12,6 +12,7 @@ library(shinyAce)   # would be used in email sending app
 library(sendmailR)  # would be used in email sending app
 library(data.table)
 library(dplyr)
+library(plotly)
 
 # rm(user_input_table)
 # initialize empty data frame for user input to form
@@ -77,52 +78,6 @@ shinyServer(function(input, output, session) {
     switch$on <- 1
   })
   
-  # make a reactive data frame
-  values <- reactiveValues()  
-  values$user_input_table <- data.frame(UserEmail = character(),
-                                 From = character(),
-                                 To = character(),
-                                 DateFrom = character(),
-                                 DateTo = character(),
-                                 MaxPrice = integer(),
-                                 stringsAsFactors=FALSE)
-  
-  
-  
-  # add to df
-  addData <- observeEvent(input$done, {
-    #values$user_input_table <- isolate({
-    #print(as.character(input$daterange))
-    #print(as.character(input$daterange[1]))
-      #newLine <- c( input$email, input$from, input$to, as.character(input$daterange)[1], as.character(input$daterange)[2], input$max_price)
-      
-    # newLine has to be created as a data frame otherwise rowbinding doesn't work
-      newLine <- data.frame(UserEmail = input$email,
-                            From = input$from,
-                            To = input$to,
-                            DateFrom = as.character(input$daterange)[1],
-                            DateTo = as.character(input$daterange)[2],
-                            #DateFrom = as.Date(date()),
-                            #DateTo = as.Date(date()),
-                            MaxPrice = input$max_price,
-                            stringsAsFactors=FALSE)
-      
-      if (input$from != '' & input$to != '' & input$email != '' & length(c(input$from, input$to, input$daterange, input$email, input$max_price)) == 6) {
-      values$user_input_table <- bind_rows(values$user_input_table, newLine)
-      }
-      # These were not working:
-      # user_input_table[nrow(user_input_table) + 1,] <- newLine
-      # values$user_input_table <- rbind(values$user_input_table, newLine)
-      # values$user_input_table[nrow(user_input_table) + 1,] <- newLine
-      # rbind(values$user_input_table,newLine)
-    
-  })
-
-  
-  output$active_notifications <- renderDataTable({
-    values$user_input_table
-  })
-  
      output$price_alert <- renderUI({
        if(is.null(input$done) || input$done==0 || switch$on == 0) return(NULL)
        
@@ -132,28 +87,12 @@ shinyServer(function(input, output, session) {
        min_date <- isolate(input$daterange)[1]
        max_date <- isolate(input$daterange)[2]
        email <- isolate(input$email)
-
-       
-# #      print(length(c(from, to, max_price, min_date, email)))
-# #      print(min_date[1])
-#       
-#       # print message for user
+    
+     # print message for user
      HTML(paste("<br>You chose flights from", from, "to", to, "<br/>",
                 "<br>in the date range starting on", paste(min_date, " and ending on ", max_date),  "<br/>", 
                 "<br>for maximum price of<b>", max_price, "CZK.</b><br/>",
                 "<br> After we find a flight matching your criteria, we will send you an email to the email address you provided.<br/>"))
-       
-#       # add user info to table (as a database)
-#       if (from != '' & to != '' & length(c(from, to, min_date, email, max_price)) == 6) {
-#         # user_input_table <- bind_rows(c( email, from, to, min_date, max_price))
-#         print(class(min_date))
-#         print(class(as.character(min_date[1])))
-#         user_input_table[nrow(user_input_table) + 1,] <- c( email, from, to, as.character(min_date[1]), as.character(min_date[2]), max_price)
-#         user_input_table
-#       }
-#       else{
-#         #print('not6')
-#       }
      })
     
     output$under_the_hood <- renderDataTable({
@@ -183,4 +122,78 @@ shinyServer(function(input, output, session) {
       }
     })
     
+    # make a reactive data frame
+    values <- reactiveValues()  
+    values$user_input_table <- data.frame(UserEmail = character(),
+                                          From = character(),
+                                          To = character(),
+                                          DateFrom = character(),
+                                          DateTo = character(),
+                                          MaxPrice = integer(),
+                                          stringsAsFactors=FALSE)
+    
+    
+    
+    # add to df
+    addData <- observeEvent(input$done, {
+      #values$user_input_table <- isolate({
+      #print(as.character(input$daterange))
+      #print(as.character(input$daterange[1]))
+      #newLine <- c( input$email, input$from, input$to, as.character(input$daterange)[1], as.character(input$daterange)[2], input$max_price)
+      
+      # newLine has to be created as a data frame otherwise rowbinding doesn't work
+      newLine <- data.frame(UserEmail = input$email,
+                            From = input$from,
+                            To = input$to,
+                            DateFrom = as.character(input$daterange)[1],
+                            DateTo = as.character(input$daterange)[2],
+                            #DateFrom = as.Date(date()),
+                            #DateTo = as.Date(date()),
+                            MaxPrice = input$max_price,
+                            stringsAsFactors=FALSE)
+      
+      if (input$from != '' & input$to != '' & input$email != '' & length(c(input$from, input$to, input$daterange, input$email, input$max_price)) == 6) {
+        values$user_input_table <- bind_rows(values$user_input_table, newLine)
+      }
+      # These were not working:
+      # user_input_table[nrow(user_input_table) + 1,] <- newLine
+      # values$user_input_table <- rbind(values$user_input_table, newLine)
+      # values$user_input_table[nrow(user_input_table) + 1,] <- newLine
+      # rbind(values$user_input_table,newLine)
+      
+    })
+    
+    output$active_notifications <- renderDataTable({
+      values$user_input_table
+    })
+    
+    output$departure_cities <- renderPlotly({
+      #create a source table from reactive user input table and specify barplot design
+      from_airports <- values$user_input_table %>%
+                        dplyr::group_by(From) %>%
+                        dplyr::summarise(n = n())
+      names(from_airports) <- c("Airport", "Flights_From")
+      
+      to_airports <- values$user_input_table %>%
+                      dplyr::group_by(To) %>%
+                      dplyr::summarise(n = n())
+      names(to_airports) <- c("Airport", "Flights_To")
+      
+      all_airports <- merge(from_airports, to_airports, by = "Airport", all = TRUE)
+      
+      p <- plot_ly(all_airports, x = ~ Airport, y = ~ Flights_From, type = 'bar', name = "Flights From") %>%
+          add_trace(y = ~ Flights_To, name = "Flights To") %>%
+          layout(yaxis = list(title = "Input Count"), barmode = "stack")
+      
+    })
+    
+    output$price_histogram <- renderPlotly({
+      #create a source table from reactive user input table and specify histogram design
+      user_input_prices <- as.data.frame(values$user_input_table)
+      p <- plot_ly(user_input_prices, type = "histogram", autobinx = FALSE, xbins = list(start = 0, end = 25000, size = 1000), marker = list(color = "green")) 
+      p <- add_trace(p, x = ~ MaxPrice, autobinx = FALSE, xbins = list(start = 0, end = 25000, size = 500))
+      p %>% config(displayModeBar = F, showLink = F) %>%
+        layout(showlegend = F, barmode = "overlay", yaxis = list(title = "Selected times"),
+               xaxis = list(title = "Max price selected", showticklabels = T))
+    })
   })

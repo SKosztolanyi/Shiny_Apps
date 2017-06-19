@@ -8,8 +8,8 @@
 #
 
 library(shiny)
-library(shinyAce)   # would be used in email sending app
-library(sendmailR)  # would be used in email sending app
+# library(shinyAce)   # would be used in email sending app
+# library(sendmailR)  # would be used in email sending app
 library(data.table)
 library(dplyr)
 library(plotly)
@@ -118,7 +118,7 @@ shinyServer(function(input, output, session) {
                                             ) ,]
       
       # show only first three results based on lowest price
-      head(flight_results[order(flight_results[,6]), ], 3)
+      flight_results[order(flight_results[,3]), ]
       }
     })
     

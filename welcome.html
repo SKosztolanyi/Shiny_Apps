@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Shiny Mzdová Kalkulačka</title>
+  <style type="text/css">
+    body, html {
+      font-family: Helvetica, Arial, sans-serif;
+      background-color: #F5F5F5;
+      color: #114;
+      margin: 0;
+      padding: 0;
+    }
+    a {
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    #titleBar {
+      height: 80px;
+      background-color: #3475b4;
+      overflow: hidden;
+      border-bottom: 1px solid #3475b3;
+      -moz-box-shadow:    0px 0px 10px 3px #BBC;
+      -webkit-box-shadow: 0px 0px 10px 3px #BBC;
+      box-shadow:         0px 0px 10px 3px #BBC;
+    }
+    #titleBar #container {
+      margin-top: 14px;
+    }
+    #titleBar h1 {
+      margin: 0 auto .5em auto;
+      padding: .2em;
+      color: #EEE;
+      text-align: center;
+    }
+    #intro {
+      background-color: #DDD;
+      margin: 1em 1em 0 1em;
+      padding: .75em;
+      text-align: center;
+      border: 1px solid #CCC;
+      font-size: 18px;
+    }
+    #intro p {
+      margin: .3em 0 .3em 0;
+    }
+    #outer-content {
+      max-width: 910px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #content {
+      margin: 1em auto 1em auto;
+      float: left;
+    }
+    #main{
+      margin-right: 350px;
+      float: left;
+      line-height: 24px;
+    }
+
+    #shiny{
+      float: left;
+      width: 250px;
+      margin-left: -290px;
+      padding-left: 20px;
+      border-left: 1px solid #AAA;
+    }
+    #shiny iframe {
+      margin-top: 30px;
+    }
+    .caption{
+      font-size: 13px;
+    }
+    code {
+      background-color: #E5E5E5;
+      border: 1px solid #AAA;
+      -webkit-border-radius: 3px;
+      -khtml-border-radius: 3px; 
+      -moz-border-radius: 3px;
+      border-radius: 3px;
+      padding: 0 .5em 0 .5em;
+    }
+  </style>
+</head>
+<body>
+  <div id="titleBar">
+    <div id="container">
+      <h1>R Shiny server aplikace v AWS</h1>
+    </div>
+  </div>
+  <div id="outer-content">
+    <div id="intro">
+      <p>Tato stránka běží na free tier Amazon EC2 mašině a slouží jako můj odkladní prostor</p>
+    </div>
+    <div id="content">
+      <div id="main">
+        <h2>Mzdová kalkulačka, porovnání mezd a platů v České Republice za rok 2016</h2>
+        <a href = "http://52.59.160.3:3838/sample-apps/Mzdy_ShinyApp/" target = "_blank">Tato aplikace</a> vznikla jako praktický pomocník pro orientaci na trhu práce.
+
+        <p>Zajímá Vás jaký plat odpovídá Vašim zkušenostem, vzdělání a pozici na ktéré pracujete? Zadejte tyto údaje do mzdové kalkulačky a zjistíte jaká je Vaše odpovídající odměna. Rozmýšlíte o změně oboru? Podívejte se na platové rozložení v té které oblasti.</p>
+
+        <p>Podívejte se také jak ovlivňují výše výdělku region, pohlaví, vzdělání a věk.</p>
+
+        <p> Víte jaká jsou nejběžnější povolání v České Republice a jaká je v nich průměrná odměna? To se také můžete dozvědět, když se podíváte do správné záložky.</p>
+
+        <h3>Podkladová data</h3>
+        Data použitá v této aplikaci pocházejí z otevřeného zdroje a jsou aktualizována jednou za tři měsíce, s opožděním cca půl roku, tj. dnes dostupná data jsou stará půl roku. Pocházejí z informačního systému o průměrném výdělku <a href = "https://www.ispv.cz/">ISPV</a>.
+
+        <p>Pro veřejnou sféru platí, že je odměňována platem a zaměstnanci jsou odměňováni mzdou. Když ale mluvím o mzdě, mám na mysli mzdu i platy, tedy obecněji finanční odměnu za vykonanou práci. </p>
+        
+        <h3><pre>Zdrojový kód kalkulačky</pre></h3>
+        <p> Zdrojový kód pro tuto aplikaci včetně použitých datasetů se nachází na mém <a href = "https://github.com/SKosztolanyi/Shiny_Apps/tree/master/Mzdy_CR_2016/Mzdy_ShinyApp">githubovém profilu</a>.
+
+        <h2>Emailový notifikátor, výběr nejlevnějších letenek podle města odletu a příletu ve zvoleném časovém období</h2>
+        <a href = "http://52.59.160.3:3838/sample-apps/Flights_Notifications/" target = "_blank">Tato aplikace</a> vznikla jako příspěvek do soutěže <a href = "https://travelhackathon.cz/" target = "_blank">Kiwi travel hackathonu</a> o nejlepší letecko-cestovatelskou aplikaci.
+
+        <p>Cílem této aplikace je upozornit uživatele na lety, které ještě nemusí být k dispozici, ale v budoucnu se objeví. Uživatel bude emailem upozorněn na aktuálnost letů, které si zvolil zadáním parametrů jako časové období letu, město odletu a příletu a maximální možná cena.</p>
+
+        <p>Motivací pro provoz této služby je zvýšení návštevnosti stránky a na to navázanou zvýšenou prodejnost letenek přes stránku provozovatele služby.</p>
+
+        <h3>Podkladová data</h3>
+        Data použitá v této aplikaci pocházejí z mé hlavy. Je to dataset vygenerován na půl rok pouze pro 4 města, neřeší se v něm zpáteční ani přestupní lety. Jediný variabilní faktor je cena letenek, která je náhodně generována podle určité heuristiky. Současně ale platí, že datumy a ceny by měli dávat smysl.
+        
+        <h3><pre>Zdrojový kód notifikátoru letenek</pre></h3>
+        <p> Zdrojový kód pro tuto aplikaci včetně použitých datasetů se nachází na mém <a href = "https://github.com/SKosztolanyi/Shiny_Apps/tree/master/Flights_Notifications">githubovém profilu</a>.
+
+
+        <h2>Něco se Vám nelíbí?</h2>
+        <p> Nebo Vám něco chybělo? Zajímá mě, co si o tom myslíte. Napište mi email na mé jménopříjmení@gmail.com . Jmenuji se Štefan Kosztolányi a je to bez interpunkce.</p>
+        <p> Další cool aplikace budou napsány v Pythonu, budou využívat Flask, scrapovat web, stahovat data přes API... </p>
+        <p> Akorát ještě nevím co budou dělat.</p>
+      </div>
+
+        <div id="shiny">
+          <h2>Kdo jsem</h2>
+          <img src="profile.jpg" alt="Mountain View" style="width:290px;height:420;">
+          <div class="caption">
+            Jsem nadšenec, který učí data mluvit, má rád interaktivní aplikace a snaží se psát kód v produkční kvalitě.
+            <p> Na fotce ten vlevo.</p>
+
+            <h3>Kde se o mě dozvíte víc</h3>
+             <p><a href = "https://www.linkedin.com/in/skosztolanyi/" target = "_blank">LinkedIn</a></p>
+             <p><a href = "https://github.com/SKosztolanyi" target = "_blank">GitHub</a></p>
+             <p><a href = "https://www.linkedin.com/in/skosztolanyi/" target = "_blank">Twitter</a></p>
+             <p><a href = "https://www.facebook.com/pista.kosztolanyi" target = "_blank">Facebook</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

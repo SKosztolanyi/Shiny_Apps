@@ -1,0 +1,45 @@
+---
+title: "Travel Hackathon Presentation"
+author: "Stefan Kosztolanyi"
+date: "22 of June 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## How does the app work?
+
+- Running on Shiny Server installed on free AWS EC2 Ubuntu server
+- Consists of ui.R and server.R files (yep, it's not python)
+- Shiny is R framework for deploying interactive web application that are built by combining R code with javascript (bootstrap for reactive content) and html with CSS
+- It's friendly to use and enables fast prototyping
+
+## Stating the business case of Email Notifications App
+
+- Activation of sleeping customers
+- Getting more page visits
+- Using free capacity of servers to search for flights specified in Alert me Flights requests
+- Can be sold as freemium feature (2 free searhes for cheap flights, more destinations are paid)
+- Selling second/third best options that are more expensive than the cheapest
+- Getting data about prefered destinations at various times of year -> can be used by data science team to adjust future campaigns
+
+## Possible risks
+
+- smaller site traffic because of waiting for notification instead of actively searching
+- could be heavily used by flight tickets companies instead of end-customers (in case of paid service it should be ok)
+- Email could be categorized as spam
+- Emails generally don't have high conversion rates (~25% of users open emails and even less click on link and only small percentage of them buy the product)
+
+## Known limitations
+
+- Limited depth (small amount of flights) and depth (small amount of airports) of the dataset
+- Emailing feature is not working right now, because I don't want to have my personal email account disabled because of sending spam :) There are R pakages that enable emailing feature, so it can be implemented in a matter of few lines of code
+- There are only direct flights without return flights
+
+## Open room for further development
+
+- A/B testing (comparison of conversion rates between newsletter and Price alert emails)
+- Should really use Kiwi API instead of dummy table
+- The app can be viewed as a data collection form about users preferences and collected data can be used for further products personalization
